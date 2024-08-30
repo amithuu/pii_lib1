@@ -1,3 +1,9 @@
+Best practice is to Delete the old dist files and create new One before using.
+
+
+# Open the code in CMD:
+  * inside the main folder
+then..
 # steps to build
    * python setup.py sdist
    * copy and paste the tar.gz. 
