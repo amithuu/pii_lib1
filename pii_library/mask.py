@@ -1,38 +1,29 @@
 def mask_data(data, fields_to_mask):
     masked_data = {}
-    masking_types = {}
-    for field in fields_to_mask:
+
+    # Assuming `MASKING_FUNCTIONS` maps masking types to their respective functions
+    MASKING_FUNCTIONS = {
+        'email_masking': email_mask,
+        'mask_last_4': mask_last_4,
+        'number_masking': number_mask,
+        'gst_masking': gst_mask,
+        'address_masking': address_mask,
+        'mask_first_4': mask_first_4,  # Default if no masking type is provided
+    }
+
+    for field, masking_type in fields_to_mask.items():
         if field in data:
             value = str(data[field]).lower() if data[field] else ''
             if value:  # Proceed with masking only if value is not empty
-                if field == "email":
-                    masked_value = email_mask(value)
-                    masking_type = 'email_mask'
-                elif field == "pan":
-                    masked_value = mask_last_4(value)
-                    masking_type = 'mask_last_4'
-                elif field == "contact_person_mobile_number":
-                    masked_value = number_mask(value)
-                    masking_type = 'number_mask'
-                elif field in ["gst", "tan", "cin"]:
-                    masked_value = gst_mask(value)
-                    masking_type = 'gst_mask'
-                elif field in ["contact_person_name", "address1", "address2"]:
-                    masked_value = address_mask(value)
-                    masking_type = 'address_mask'
-                else:
-                    masked_value = mask_first_4(value)
-                    masking_type = 'mask_first_4'
+                mask_function = MASKING_FUNCTIONS.get(masking_type, mask_first_4)
+                masked_value = mask_function(value)
                 masked_data[field] = masked_value
-                masking_types[field] = masking_type
             else:
                 masked_data[field] = ''  # Handle empty or None values by setting empty string
-                masking_types[field] = None  # No masking type for empty values
         else:
             masked_data[field] = data[field]  # If field not in data, copy the original value
 
-    return masked_data, masking_types
-
+    return masked_data
 
 def mask_first_4(value):
     if value:
@@ -143,3 +134,39 @@ def address_mask(value):
         return masked_value
     return value
 
+
+
+# def mask_data(data, fields_to_mask):
+#     masked_data = {}
+#     # masking_types = {}
+#     for field in fields_to_mask:
+#         if field in data:
+#             value = str(data[field]).lower() if data[field] else ''
+#             if value:  # Proceed with masking only if value is not empty
+#                 if field == "email":
+#                     masked_value = email_mask(value)
+#                     # masking_type = 'email_mask'
+#                 elif field == "pan":
+#                     masked_value = mask_last_4(value)
+#                     # masking_type = 'mask_last_4'
+#                 elif field == "contact_person_mobile_number":
+#                     masked_value = number_mask(value)
+#                     # masking_type = 'number_mask'
+#                 elif field in ["gst", "tan", "cin"]:
+#                     masked_value = gst_mask(value)
+#                     # masking_type = 'gst_mask'
+#                 elif field in ["contact_person_name", "address1", "address2"]:
+#                     masked_value = address_mask(value)
+#                     # masking_type = 'address_mask'
+#                 else:
+#                     masked_value = mask_first_4(value)
+#                     masking_type = 'mask_first_4'
+#                 masked_data[field] = masked_value
+#                 # masking_types[field] = masking_type
+#             else:
+#                 masked_data[field] = ''  # Handle empty or None values by setting empty string
+#                 # masking_types[field] = None  # No masking type for empty values
+#         else:
+#             masked_data[field] = data[field]  # If field not in data, copy the original value
+
+#     return masked_data #, masking_types
