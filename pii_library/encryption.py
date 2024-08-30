@@ -1,15 +1,20 @@
 from cryptography.fernet import Fernet  # type: ignore
 import base64
 import os
+import hashlib
 
+def generate_deterministic_key(value):
+    # Create a deterministic key based on the value
+    hash_object = hashlib.sha256(value.encode())
+    return base64.urlsafe_b64encode(hash_object.digest())
 
 def encrypt_data(data, fields_to_mask):
     encrypted_values = {}
     tokens = {}
     for field in fields_to_mask:
-        value = data[field]
         if field in data:
-            token = Fernet.generate_key()  # Generate a separate token for each field
+            value = data[field]
+            token = generate_deterministic_key(value)
             cipher = Fernet(token)
             salt = os.urandom(16)
             salted_data = salt + value.encode()
@@ -31,9 +36,6 @@ def decrypt_data(encrypted_data, tokens, fields_to_mask):
             decrypted_data = cipher.decrypt(encrypted_data_field)[16:].decode()
             decrypted_values[field] = decrypted_data
     return decrypted_values
-
-
-
 
 """ 
 Encrypts the given data using a symmetric encryption algorithm (Fernet) with a randomly generated key.
