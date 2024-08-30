@@ -1,4 +1,4 @@
-Best practice is to Delete the old dist files and create new One before using.
+**Best practice is to Delete the old dist and pii_library.egg-info files and create new One before using.**
 
 
 # Open the code in CMD:
